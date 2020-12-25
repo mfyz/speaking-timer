@@ -1,5 +1,5 @@
 body {
-	font: 18px/30px Helvetica, Sans-serif;
+	font: 24px/40px Helvetica, Sans-serif;
 	padding: 0;
 	margin: 0;
 	background-color: #111111;
@@ -35,6 +35,10 @@ body {
 .mainTimerUI {
 	text-align: center;
 
+	.timer {
+		font-size: 70px;
+	}
+
 	&.red {
 		background-color: red;
 	}
@@ -54,4 +58,26 @@ button {
 
 button.red {
 	background-color: red;
+}
+
+button.gray {
+	background-color: #555555;
+}
+
+.flashIntervalWrapper {
+	font-size: 16px;
+	margin-top: 30px;
+	color: #666666;
+
+	input {
+		margin: 0 10px;
+		background-color: transparent;
+		color: #999999;
+		border: 0;
+		border-bottom: 1px solid #444444;
+		text-align: center;
+		width: 30px;
+		font-weight: bold;
+		font-size: 16px;
+	}
 }

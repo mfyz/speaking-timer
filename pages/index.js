@@ -1,4 +1,5 @@
-import React, { Component } from "react"
+import React, { Component } from 'react'
+import NoSleep from 'nosleep.js'
 
 import Layout from '../components/layout'
 
@@ -8,10 +9,16 @@ class Index extends Component {
 
 		this.state = {
 			enabled: false,
-			timer: 0
+			timer: 0,
+			flashInterval: 5
 		}
 
 		this.timer = null
+	}
+
+	componentDidMount() {
+		const noSleep = new NoSleep()
+		noSleep.enable()
 	}
 
 	startTimer() {
@@ -32,8 +39,21 @@ class Index extends Component {
 		clearInterval(this.timer)
 	}
 
+	resetTimer() {
+		this.stopTimer()
+		this.setState({
+			timer: 0
+		})
+	}
+
+	changeFlashInterval(e) {
+		this.setState({
+			flashInterval: e.target.value
+		})
+	}
+
 	render() {
-		const { enabled, timer } = this.state
+		const { enabled, timer, flashInterval } = this.state
 
 		const minutes = Math.floor(timer / 60)
 		let minutesStr = minutes
@@ -44,9 +64,10 @@ class Index extends Component {
 
 		let uiClasses = []
 		if (
-			minutes > 0
-			&& minutes % 5 == 0 // every 5 minutes
-			&& seconds < 20     // for 20 seconds
+			flashInterval > 0
+			&& minutes > 0
+			&& minutes % flashInterval == 0 // every [5] minutes
+			&& seconds < 20 // for 20 seconds
 			&& seconds % 2 == 0 // flash
 		) {
 			uiClasses.push('orange')
@@ -54,13 +75,22 @@ class Index extends Component {
 
 		return (
 			<Layout className={`mainTimerUI ${uiClasses.join(' ')}`}>
-				<h1 class="timer">{`${minutesStr}:${secondsStr}`}</h1>
-				{!enabled && (
-					<button onClick={this.startTimer.bind(this)}>Start</button>
-				)}
-				{enabled && (
-					<button class="red" onClick={this.stopTimer.bind(this)}>Stop</button>
-				)}
+				<h1 className="timer">{`${minutesStr}:${secondsStr}`}</h1>
+				<div>
+					{!enabled && (
+						<button onClick={this.startTimer.bind(this)}>Start</button>
+					)}
+					{enabled && (
+						<button className="red" onClick={this.stopTimer.bind(this)}>Stop</button>
+					)}
+					&nbsp;
+					<button className="gray" onClick={this.resetTimer.bind(this)}>Reset</button>
+				</div>
+				<div className="flashIntervalWrapper">
+					Flash in every
+					<input type="number" onChange={this.changeFlashInterval.bind(this)} value={flashInterval} />
+					minutes
+				</div>
 			</Layout>
 		)
 	}
