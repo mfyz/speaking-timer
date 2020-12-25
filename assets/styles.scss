@@ -1,0 +1,57 @@
+body {
+	font: 18px/30px Helvetica, Sans-serif;
+	padding: 0;
+	margin: 0;
+	background-color: #111111;
+	color: #ffffff;
+}
+
+.header {
+	padding: 1px 20px;
+	background-color: #222222;
+
+	ul, li {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	li {
+		margin-right: 20px;
+		display: inline-block;
+		cursor: pointer;
+
+		&.active {
+			text-decoration: underline;
+			color: red;
+		}
+	}
+}
+
+.content {
+	padding: 20px;
+}
+
+.mainTimerUI {
+	text-align: center;
+
+	&.red {
+		background-color: red;
+	}
+	
+	&.orange {
+		background-color: orange;
+	}
+}
+
+button {
+	background-color: #0096FF;
+	color: #ffffff;
+	border: 0;
+	border-radius: 5px;
+	padding: 10px 20px;
+}
+
+button.red {
+	background-color: red;
+}
