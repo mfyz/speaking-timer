@@ -1,5 +1,10 @@
+* {
+	font-family: system-ui, -apple-system, Helvetica, Sans-serif;
+}
+
 body {
-	font: 24px/40px Helvetica, Sans-serif;
+	font-size: 20px;
+	line-height: 35px;
 	padding: 0;
 	margin: 0;
 	background-color: #111111;
@@ -36,7 +41,14 @@ body {
 	text-align: center;
 
 	.timer {
-		font-size: 70px;
+		font-family: ui-monospace, Menlo, Monaco, monospace;
+		font-weight: normal;
+		text-shadow: rgba(0,0,0,0.3) 0 8px 10px;
+		font-size: 100px;
+		height: 150px;
+		line-height: 150px;
+		margin: 0;
+		margin-bottom: 30px;
 	}
 
 	&.red {
@@ -54,10 +66,17 @@ button {
 	border: 0;
 	border-radius: 5px;
 	padding: 10px 20px;
+	margin: 0 5px;
+	font-size: 16px;
+	box-shadow: rgba(0,0,0,0.2) 0 8px 10px;
 }
 
 button.red {
 	background-color: red;
+}
+
+button.orange {
+	background-color: orange;
 }
 
 button.gray {
@@ -65,14 +84,14 @@ button.gray {
 }
 
 .flashIntervalWrapper {
-	font-size: 16px;
+	font-size: 18px;
 	margin-top: 30px;
-	color: #666666;
+	color: #444444;
 
 	input {
 		margin: 0 10px;
 		background-color: transparent;
-		color: #999999;
+		color: #666666;
 		border: 0;
 		border-bottom: 1px solid #444444;
 		text-align: center;
@@ -80,4 +99,13 @@ button.gray {
 		font-weight: bold;
 		font-size: 16px;
 	}
+}
+
+.checkpoints {
+	border-top: 1px solid #333333;
+	margin: 30px auto 0 auto;
+	padding-top: 10px;
+	max-width: 300px;
+	text-align: left;
+	color: #777777;
 }

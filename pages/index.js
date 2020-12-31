@@ -9,40 +9,51 @@ class Index extends Component {
 
 		this.state = {
 			enabled: false,
+			started_at: null,
 			timer: 0,
-			flashInterval: 5
+			flashInterval: 5,
+			checkpoints: []
 		}
 
-		this.timer = null
+		this.timerInterval = null
+		this.noSleep = null
 	}
 
 	componentDidMount() {
-		const noSleep = new NoSleep()
-		noSleep.enable()
+		this.noSleep = new NoSleep()
 	}
 
 	startTimer() {
+		this.noSleep.enable()
 		this.setState({
 			enabled: true,
+			started_at: Date.now() / 1000
 		})
-		this.timer = setInterval(() => {
-			this.setState({
-				timer: this.state.timer + 1
-			})
-		}, 1000)
+		this.timerInterval = setInterval(() => {
+			const timerNew = Math.round((Date.now() / 1000) - this.state.started_at)
+			this.setState({ timer: timerNew })
+		}, 200)
 	}
 
 	stopTimer() {
 		this.setState({
 			enabled: false,
 		})
-		clearInterval(this.timer)
+		clearInterval(this.timerInterval)
+		this.noSleep.disable()
 	}
 
 	resetTimer() {
 		this.stopTimer()
 		this.setState({
 			timer: 0
+		})
+	}
+
+	recordCheckpoint() {
+		const updateCheckpoints = [...this.state.checkpoints, Date.now() / 1000]
+		this.setState({
+			checkpoints: updateCheckpoints
 		})
 	}
 
@@ -53,7 +64,7 @@ class Index extends Component {
 	}
 
 	render() {
-		const { enabled, timer, flashInterval } = this.state
+		const { enabled, timer, flashInterval, started_at, checkpoints } = this.state
 
 		const minutes = Math.floor(timer / 60)
 		let minutesStr = minutes
@@ -73,6 +84,8 @@ class Index extends Component {
 			uiClasses.push('orange')
 		}
 
+		let previousCheckpoint = null
+
 		return (
 			<Layout className={`mainTimerUI ${uiClasses.join(' ')}`}>
 				<h1 className="timer">{`${minutesStr}:${secondsStr}`}</h1>
@@ -81,9 +94,11 @@ class Index extends Component {
 						<button onClick={this.startTimer.bind(this)}>Start</button>
 					)}
 					{enabled && (
-						<button className="red" onClick={this.stopTimer.bind(this)}>Stop</button>
+						<>
+							<button onClick={this.recordCheckpoint.bind(this)}>Checkpoint</button>
+							<button className="red" onClick={this.stopTimer.bind(this)}>Stop</button>
+						</>
 					)}
-					&nbsp;
 					<button className="gray" onClick={this.resetTimer.bind(this)}>Reset</button>
 				</div>
 				<div className="flashIntervalWrapper">
@@ -91,6 +106,35 @@ class Index extends Component {
 					<input type="number" onChange={this.changeFlashInterval.bind(this)} value={flashInterval} />
 					minutes
 				</div>
+				{checkpoints.length > 0 && (
+					<div className="checkpoints">
+						<ul>
+							{checkpoints.map((checkpoint) => {
+								const diffSecs = Math.floor(checkpoint - started_at)
+								let strDiffMins = diffSecs > 60 ? Math.floor(diffSecs / 60) : 0
+								if (strDiffMins < 10) strDiffMins = '0' + strDiffMins
+								let strDiffSecs = Math.floor(diffSecs % 60)
+								if (strDiffSecs < 10) strDiffSecs = '0' + strDiffSecs
+								let strDiff = strDiffMins + ':' + strDiffSecs
+
+								if (previousCheckpoint) {
+									let diffSecsFromLastCheckpoint = Math.floor(checkpoint - previousCheckpoint)
+									if (diffSecsFromLastCheckpoint > 60) diffSecsFromLastCheckpoint = Math.floor(diffSecsFromLastCheckpoint / 60) + 'm'
+									else diffSecsFromLastCheckpoint += 's'
+									strDiff += ' (+' + diffSecsFromLastCheckpoint + ')'
+								}
+
+								previousCheckpoint = checkpoint
+								
+								return (
+									<li key={checkpoint}>
+										{strDiff}
+									</li>
+								)
+							})}
+						</ul>
+					</div>
+				)}
 			</Layout>
 		)
 	}
