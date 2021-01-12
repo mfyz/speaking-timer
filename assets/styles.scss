@@ -51,12 +51,40 @@ body {
 		margin-bottom: 30px;
 	}
 
+	.timeLeft {
+		position: absolute;
+		margin-top: -50px;
+		text-align: center;
+		left: 0;
+		right: 0;
+		font-family: ui-monospace, Menlo, Monaco, monospace;
+		text-shadow: rgba(0,0,0,0.6) 0 4px 10px;
+		color: #888888;
+
+		&.under5minsLeft {
+			color: orange;
+		}
+	}
+
 	&.red {
 		background-color: red;
 	}
 	
 	&.orange {
 		background-color: orange;
+	}
+
+	&.overtime {
+		.timers {
+			color: red;
+			animation: blinker 1s linear infinite;
+		}
+	}
+}
+
+@keyframes blinker {
+	50% {
+		opacity: 0.3;
 	}
 }
 
@@ -83,24 +111,6 @@ button.gray {
 	background-color: #555555;
 }
 
-.flashIntervalWrapper {
-	font-size: 18px;
-	margin-top: 30px;
-	color: #444444;
-
-	input {
-		margin: 0 10px;
-		background-color: transparent;
-		color: #666666;
-		border: 0;
-		border-bottom: 1px solid #444444;
-		text-align: center;
-		width: 30px;
-		font-weight: bold;
-		font-size: 16px;
-	}
-}
-
 .checkpoints {
 	border-top: 1px solid #333333;
 	margin: 30px auto 0 auto;
@@ -108,4 +118,87 @@ button.gray {
 	max-width: 300px;
 	text-align: left;
 	color: #777777;
+}
+
+.outlines {
+	margin: 20px auto;
+	max-width: 300px;
+
+	.outlinesList {
+		&, li {
+			text-align: left;
+		}
+
+		li.isCurrent {
+			color: yellow;
+		}
+
+		li.completed {
+			color: green;
+		}
+		
+		li.total {
+			color: #555555;
+
+			&.overtime {
+				color: red;
+			}
+		}
+	}
+}
+
+.settingsWrapper {
+	.flashIntervalWrapper {
+		font-size: 18px;
+		margin-top: 30px;
+		color: #444444;
+	
+		input {
+			margin: 0 10px;
+			background-color: transparent;
+			color: #666666;
+			border: 0;
+			border-bottom: 1px solid #444444;
+			text-align: center;
+			width: 30px;
+			font-weight: bold;
+			font-size: 16px;
+		}
+	}
+
+	.outlinesSettings {
+		margin: 20px auto;
+		max-width: 300px;
+	
+		.options {
+			a {
+				display: inline-block;
+				padding: 0 8px;
+				margin: 0 2px;
+				font-size: 0.8em;
+				background-color: #333333;
+				cursor: pointer;
+	
+				&.cu {
+					background-color: #666666;
+				}
+			}
+		}
+	
+		.outlineForm {
+			margin-top: 20px;
+	
+			textarea {
+				width: 100%;
+				height: 150px;
+				background-color: #222222;
+				border: 0;
+				padding: 10px;
+				color: #ffffff;
+				font-family: ui-monospace, Menlo, Monaco, monospace;
+				font-size: 14px;
+				outline: none;
+			}
+		}
+	}
 }
