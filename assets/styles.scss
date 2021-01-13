@@ -72,6 +72,15 @@ body {
 	
 	&.orange {
 		background-color: orange;
+
+		.timeLeft {
+			color: white;
+			text-shadow: rgba(0,0,0,0.2) 0 4px 10px;
+
+			.under5minsLeft {
+				color: red;
+			}
+		}
 	}
 
 	&.overtime {
@@ -89,14 +98,18 @@ body {
 }
 
 button {
+	display: inline-block;
 	background-color: #0096FF;
 	color: #ffffff;
 	border: 0;
 	border-radius: 5px;
-	padding: 10px 20px;
+	padding: 0 20px;
 	margin: 0 5px;
 	font-size: 16px;
+	height: 45px;
+	line-height: 45px;
 	box-shadow: rgba(0,0,0,0.2) 0 8px 10px;
+	outline: none;
 }
 
 button.red {
@@ -122,26 +135,54 @@ button.gray {
 
 .outlines {
 	margin: 20px auto;
-	max-width: 300px;
+	max-width: 350px;
 
 	.outlinesList {
 		&, li {
 			text-align: left;
+			font-family: ui-monospace, Menlo, Monaco, monospace;
+			font-size: 0.9em;
+			letter-spacing: -1.2px;
 		}
 
-		li.isCurrent {
-			color: yellow;
-		}
+		li {
+			.progressWrapper {
+				display: block;
+				position: relative;
 
-		li.completed {
-			color: green;
-		}
-		
-		li.total {
-			color: #555555;
+				span {
+					display: block;
+					position: absolute;
+					z-index: 1;
+					left: 0;
+					bottom: 0;
+					border-bottom: 2px solid #444444;
+				}
 
-			&.overtime {
-				color: red;
+				.progressGhost {
+					right: 0;
+				}
+
+				.progress {
+					z-index: 2;
+					border-bottom: 2px solid yellow;
+				}
+			}
+
+			&.isCurrent {
+				color: yellow;
+			}
+
+			&.completed {
+				color: green;
+			}
+			
+			&.total {
+				color: #555555;
+
+				&.overtime {
+					color: red;
+				}
 			}
 		}
 	}
@@ -174,9 +215,9 @@ button.gray {
 			a {
 				display: inline-block;
 				padding: 0 8px;
-				margin: 0 2px;
-				font-size: 0.8em;
+				margin: 2px;
 				background-color: #333333;
+				font-size: 0.8em;
 				cursor: pointer;
 	
 				&.cu {

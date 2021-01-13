@@ -1,11 +1,15 @@
 import React, { Component } from 'react'
 import NoSleep from 'nosleep.js'
+import ls from 'local-storage'
 
 import Layout from '../components/layout'
 
+const STATE_STORAGE_KEY = 'speaker-timer-state'
+const STATE_VERSION = 1
+
 const predefinedOutlines = [
 	{
-		label: 'BhS', // 5 mins
+		label: 'Bh5', // 5 mins
 		outlineText: `
 			0.5m Clarify
 			1m   Context
@@ -15,24 +19,14 @@ const predefinedOutlines = [
 			0.5m Learning
 		`
 	}, {
-		label: 'M', // 15 mins
+		label: 'Bh10', // 10 mins
 		outlineText: `
 			1m Clarify
-			2m Context
-			4m Situation
-			4m Action
-			2m Result
-			2m Learning
-		`
-	}, {
-		label: 'L', // 30 mins
-		outlineText: `
-			2m Clarify
-			5m Context
-			7m Situation
-			7m Action
-			5m Result
-			3m Learning
+			1m Context
+			3m Situation
+			3m Action
+			1m Result
+			1m Learning
 		`
 	}, {
 		label: 'St', // 45 mins
@@ -48,6 +42,7 @@ const predefinedOutlines = [
 			3m MVP
 			3m SUCCESS / KPIs
 			3m GTM
+			1m Summary (1-2-3)
 		`
 	}, {
 		label: 'PD', // 45 mins
@@ -63,18 +58,38 @@ const predefinedOutlines = [
 			3m MVP
 			3m SUCCESS / KPIs
 			3m GTM
+			1m Summary (1-2-3)
 		`
 	}, {
-		label: 'Ax', // 45 mins
+		linebreak: true
+	}, {
+		label: '10m', // 10m
 		outlineText: `
-			5m Intro/Agenda
-			20m Review Resume
-			10m Company Matrix
-			20m Prep Status Review
-			10m Answer Structures
-			10m Referals strategy
-			15m Attack strategy
-			1m Talking style
+			3m 1 / 3
+			3m 2 / 3
+			4m 3 / 3
+		`
+	}, {
+		label: '30m', // 30m
+		outlineText: `
+			10m 1 / 3
+			10m 2 / 3
+			10m 3 / 3
+		`
+	}, {
+		label: '45m', // 45m
+		outlineText: `
+			15m 1 / 3
+			15m 2 / 3
+			15m 3 / 3
+		`
+	}, {
+		label: '60m', // 60m
+		outlineText: `
+			15m 1 / 4
+			15m 2 / 4
+			15m 3 / 4
+			15m 4 / 4
 		`
 	},
 ]
@@ -83,10 +98,35 @@ class Index extends Component {
 	constructor(props) {
 		super(props)
 
-		this.state = {
+		this.state = this.getInitialState()
+
+		this.timerInterval = null
+		this.noSleep = null
+	}
+
+	componentDidMount() {
+		this.noSleep = new NoSleep()
+
+		const storedState = ls.get(STATE_STORAGE_KEY)
+		if (storedState
+			&& storedState.version === STATE_VERSION // if new schema present
+			&& storedState.started_at > ((Date.now() / 1000) - 60*60*5) // if no older than 5 hours
+		) {
+			this.setState({ ...storedState })
+			if (storedState.enabled) {
+				this.startTimerHelpers()
+			}
+		}
+	}
+
+	getInitialState() {
+		const initialState = {
+			version: STATE_VERSION,
 			enabled: false,
+			started: false,
 			started_at: null,
 			timer: 0,
+			resetShouldConfirm: false,
 			flashInterval: 5,
 			checkpoints: [],
 			showSettings: false,
@@ -95,21 +135,38 @@ class Index extends Component {
 			meetingTimeSeconds: 0,
 			outlines: []
 		}
-
-		this.timerInterval = null
-		this.noSleep = null
+		return initialState
 	}
 
-	componentDidMount() {
-		this.noSleep = new NoSleep()
+	saveState() {
+		setTimeout(() => {
+			ls.set(STATE_STORAGE_KEY, this.state)
+		}, 200)
+	}
+
+	clearState() {
+		ls.set(STATE_STORAGE_KEY, null)
+		this.setState({
+			...this.getInitialState()
+		})
 	}
 
 	startTimer() {
-		this.noSleep.enable()
+		if (!this.state.started) {
+			this.setState({
+				started: true,
+				started_at: Date.now() / 1000
+			})
+		}
 		this.setState({
 			enabled: true,
-			started_at: Date.now() / 1000
 		})
+		this.startTimerHelpers()
+		this.saveState()
+	}
+
+	startTimerHelpers() {
+		this.noSleep.enable()
 		this.timerInterval = setInterval(() => {
 			const timerNew = Math.round((Date.now() / 1000) - this.state.started_at)
 			this.setState({ timer: timerNew })
@@ -125,14 +182,15 @@ class Index extends Component {
 	}
 
 	resetTimer() {
-		this.stopTimer()
-		this.setState({
-			timer: 0,
-			meetingTimeSeconds: 0,
-			outlineFormVisible: false,
-			outlineText: null,
-			outlines: []
-		})
+		if (this.state.resetShouldConfirm) {
+			this.stopTimer()
+			this.setState({
+				...this.getInitialState()
+			})
+			this.clearState()
+		} else {
+			this.setState({ resetShouldConfirm: true })
+		}
 	}
 
 	recordCheckpoint() {
@@ -140,12 +198,14 @@ class Index extends Component {
 		this.setState({
 			checkpoints: updateCheckpoints
 		})
+		this.saveState()
 	}
 
 	changeFlashInterval(e) {
 		this.setState({
 			flashInterval: e.target.value
 		})
+		this.saveState()
 	}
 
 	toggleSettings() {
@@ -189,12 +249,14 @@ class Index extends Component {
 			meetingTimeSeconds: currentMarkSeconds,
 			outlines
 		})
+		this.saveState()
 	}
 
 	render() {
 		const {
 			enabled, timer, flashInterval, started_at, checkpoints, showSettings,
-			outlineTextarea, outlineFormVisible, outlines, meetingTimeSeconds
+			outlineTextarea, outlineFormVisible, outlines, meetingTimeSeconds,
+			resetShouldConfirm
 		} = this.state
 
 		const minutes = Math.floor(timer / 60)
@@ -245,16 +307,16 @@ class Index extends Component {
 				</div>
 				<div>
 					{!enabled && (
-						<button onClick={this.startTimer.bind(this)}>Start</button>
+						<button onClick={this.startTimer.bind(this)}>▶</button>
 					)}
 					{enabled && (
 						<>
-							<button className="gray" onClick={this.recordCheckpoint.bind(this)}>✓</button>
-							<button className="gray" onClick={this.stopTimer.bind(this)}>▉</button>
+							<button className="gray" onClick={this.recordCheckpoint.bind(this)}>✅</button>
+							<button className="gray" onClick={this.stopTimer.bind(this)}>⏸</button>
 						</>
 					)}
-					<button className="gray" onClick={this.resetTimer.bind(this)}>⨉</button>
-					<button className="gray" onClick={this.toggleSettings.bind(this)}>⚙</button>
+					<button className={resetShouldConfirm ? 'red' : 'gray'} onClick={this.resetTimer.bind(this)}>⨉</button>
+					<button className="gray" onClick={this.toggleSettings.bind(this)}>⚙️</button>
 				</div>
 				{showSettings && (
 					<div className="settingsWrapper">
@@ -265,16 +327,19 @@ class Index extends Component {
 						</div>
 						<div className="outlinesSettings">
 							<div className="options">
-								{predefinedOutlines.map((outline) => (
-									<a
-										key={outline.label}
-										className={`o_` + outline.label}
-										onClick={() => { this.showOutlineForm(outline.outlineText) }}
-									>
-										{outline.label}
-									</a>
-								))}
 								<a className="cu" onClick={() => { this.showOutlineForm() }}>Cu</a>
+								{predefinedOutlines.map((outline, i) => {
+									if (outline.linebreak) return <div className="linebreak" key={'lb' + i} />
+									return (
+										<a
+											key={outline.label}
+											className={`o_` + outline.label}
+											onClick={() => { this.showOutlineForm(outline.outlineText) }}
+										>
+											{outline.label}
+										</a>
+									)
+								})}
 							</div>
 							{outlineFormVisible && (
 								<div className="outlineForm">
@@ -291,20 +356,29 @@ class Index extends Component {
 				<div className="outlines">
 					{outlines.length > 0 && (
 						<ul className="outlinesList">
-							{outlines.map((outline) => {
+							{outlines.map((outline, i) => {
 								const isCurrent = timer > totalSecs && timer <= totalSecs + (outline.timing * 60)
+								let currentProgress = isCurrent ? Math.round(((timer - totalSecs) / (outline.timing * 60)) * 100) : 0
+								if (isCompleted) currentProgress = 100
 								totalSecs += (outline.timing * 60)
+								const isCompleted = timer > totalSecs
 								return (
 									<li
 										key={outline.label}
-										className={`${timer > totalSecs ? 'completed' : ''} ${isCurrent ? ' isCurrent' : ''}`}
+										className={`${isCompleted ? 'completed' : ''} ${isCurrent ? ' isCurrent' : ''}`}
 									>
 										{timer > totalSecs && (
-											<span>✅ </span>
+											<span>✅ &nbsp;</span>
 										)}
 										{`${outline.timing}`.substr(0, 3)}m
 										&middot;&nbsp;
 										{outline.label}
+										{isCurrent && (
+											<span className="progressWrapper">
+												<span className="progress" style={{ width: currentProgress + '%' }} />
+												<span className="progressGhost" />
+											</span>
+										)}
 									</li>
 								)
 							})}
