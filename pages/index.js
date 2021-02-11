@@ -19,47 +19,31 @@ const predefinedOutlines = [
 			0.5m Learning
 		`
 	}, {
-		label: 'Bh10', // 10 mins
-		outlineText: `
-			1m Clarify
-			1m Context
-			3m Situation
-			3m Action
-			1m Result
-			1m Learning
-		`
-	}, {
 		label: 'St', // 45 mins
 		outlineText: `
 			4m Clarify
 			3m Who are WE & Strengths
 			3m COMPETITION
-			5m Who are the USERS & Segments
+			5m Environment / Climate
 			4m GOALS (User, Biz)
 			7m PAIN POINTS
-			3m PRIORITIZATION
-			7m SOLUTION / DIRECTION
-			3m MVP
-			3m SUCCESS / KPIs
 			3m GTM
 			1m Summary (1-2-3)
 		`
 	}, {
-		label: 'PD', // 45 mins
+		label: 'PD35', // 35 mins
 		outlineText: `
-			4m Clarify
-			3m Who are WE & Strengths
-			3m COMPETITION
-			5m Who are the USERS & Segments
-			4m GOALS (User, Biz)
+			1m Clarify/Assumptions
+			4m Structure
+			3m Co Mission, Strength
+			5m USERS & Segments
 			7m PAIN POINTS
-			3m PRIORITIZATION
-			7m SOLUTION
-			3m MVP
-			3m SUCCESS / KPIs
-			3m GTM
+			2m PRIORITIZATION
+			7m SOLUTION, Trade Offs
+			5m SUCCESS / KPIs
 			1m Summary (1-2-3)
 		`
+	}, {
 	}, {
 		linebreak: true
 	}, {
