@@ -19,16 +19,34 @@ const predefinedOutlines = [
 			0.5m Learning
 		`
 	}, {
-		label: 'St', // 45 mins
+		label: 'G15',
 		outlineText: `
-			4m Clarify
-			3m Who are WE & Strengths
-			3m COMPETITION
-			5m Environment / Climate
-			4m GOALS (User, Biz)
-			7m PAIN POINTS
-			3m GTM
-			1m Summary (1-2-3)
+			0.5m Co Mission
+			1m Why exists / Problem
+			0.5m ⭐️ Prod Mission
+			2m Users
+			3m Actions
+			5m ⭐️ Metrics
+			1m ⭐️ North Star
+			2m ⭐️ Trade-Offs
+			0.1m ▸ Long Term
+			0.1m ▸ Future 5yr
+			0.1m ▸ Challenges
+		`
+	}, {
+		label: 'G30',
+		outlineText: `
+			1m Co Mission
+			2m Why exists / Problem
+			1m ⭐️ Prod Mission
+			4m Users
+			5m Actions
+			10m ⭐️ Metrics
+			3m ⭐️ North Star
+			4m ⭐️ Trade-Offs
+			0.1m ▸ Long Term
+			0.1m ▸ Future 5yr
+			0.1m ▸ Challenges
 		`
 	}, {
 		label: 'PD35', // 35 mins
