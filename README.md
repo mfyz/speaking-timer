@@ -12,4 +12,3 @@ A tiny web app a modified stopwatch-like timer to help tracking time on long spe
 ### Deployment
 
 Set up your github/gitlab/bitbucket repo (public or private) then import/link with vercel project in your vercel account.
-
