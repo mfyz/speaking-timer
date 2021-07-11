@@ -6,6 +6,7 @@ import Layout from '../components/layout'
 
 const STATE_STORAGE_KEY = 'speaker-timer-state'
 const STATE_VERSION = 1
+const DEBUG = false
 
 const predefinedOutlines = [
 	{
@@ -112,7 +113,7 @@ class Index extends Component {
 		const storedState = ls.get(STATE_STORAGE_KEY)
 		if (storedState
 			&& storedState.version === STATE_VERSION // if new schema present
-			&& storedState.started_at > ((Date.now() / 1000) - 60*60*5) // if no older than 5 hours
+			// && storedState.started_at > ((Date.now() / 1000) - 60*60*5) // if no older than 5 hours
 		) {
 			this.setState({ ...storedState })
 			if (storedState.enabled) {
@@ -225,7 +226,9 @@ class Index extends Component {
 
 		this.setState({
 			outlineFormVisible: true,
-			outlineTextarea: cleanOutlineText
+			...(outlineText ? {
+				outlineTextarea: cleanOutlineText
+			} : {})
 		})
 	}
 
@@ -419,6 +422,13 @@ class Index extends Component {
 							})}
 						</ul>
 					</div>
+				)}
+
+				{DEBUG && (
+					<pre
+						style={{ textAlign: 'left', fontFamily: 'Monaco', fontSize: 14,
+							marginTop: 50, paddingTop: 50, borderTop: '1px solid #444444' }}
+					>{JSON.stringify(this.state, null, 4)}</pre>
 				)}
 			</Layout>
 		)
